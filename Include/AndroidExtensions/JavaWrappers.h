@@ -219,6 +219,8 @@ namespace java::net
 
         void Connect();
 
+        bool GetDoOutput() const;
+
         URL GetURL() const;
 
         int GetContentLength() const;

@@ -370,6 +370,13 @@ namespace java::net
     {
     }
 
+    bool URLConnection::GetDoOutput() const
+    {
+        auto output{m_env->CallObjectMethod(JObject(), m_env->GetMethodID(m_class, "getDoOutput", "()Z;"))};
+        ThrowIfFaulted(m_env);
+        return {output};
+    }
+
     void URLConnection::Connect()
     {
         m_env->CallVoidMethod(JObject(), m_env->GetMethodID(m_class, "connect", "()V"));
