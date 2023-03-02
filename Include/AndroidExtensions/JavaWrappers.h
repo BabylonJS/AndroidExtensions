@@ -221,6 +221,10 @@ namespace java::net
 
         bool GetDoOutput() const;
 
+        void SetDoOutput(bool n);
+
+        void SetRequestProperty(std::string key, std::string value);
+
         URL GetURL() const;
 
         int GetContentLength() const;

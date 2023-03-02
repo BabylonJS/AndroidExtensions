@@ -372,9 +372,23 @@ namespace java::net
 
     bool URLConnection::GetDoOutput() const
     {
-        auto output{m_env->CallObjectMethod(JObject(), m_env->GetMethodID(m_class, "getDoOutput", "()Z;"))};
+        auto output{m_env->CallBooleanMethod(JObject(), m_env->GetMethodID(m_class, "getDoOutput", "()Z"))};
         ThrowIfFaulted(m_env);
-        return {output};
+        return {static_cast<bool>(output)};
+    }
+
+    void URLConnection::SetDoOutput(bool n)
+    {
+        m_env->CallVoidMethod(JObject(),  m_env->GetMethodID(m_class, "setDoOutput", "(Z)V"), true);
+        ThrowIfFaulted(m_env);
+    }
+
+    void URLConnection::SetRequestProperty(std::string key, std::string value)
+    {
+        jstring propertyName = m_env->NewStringUTF(key.c_str());
+        jstring propertyValue = m_env->NewStringUTF(value.c_str());
+        m_env->CallVoidMethod(JObject(), m_env->GetMethodID(m_class, "setRequestProperty", "(Ljava/lang/String;Ljava/lang/String;)V"), propertyName, propertyValue);
+        ThrowIfFaulted(m_env);
     }
 
     void URLConnection::Connect()
