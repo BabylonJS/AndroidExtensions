@@ -318,6 +318,31 @@ namespace java::io
     {
         return m_env->CallIntMethod(JObject(), m_env->GetMethodID(m_class, "read", "([B)I"), (jbyteArray)byteArray);
     }
+
+    OutputStream::OutputStream(jobject object)
+            : Object{object}
+    {
+    }
+
+    OutputStreamWriter::OutputStreamWriter(jobject object)
+            : Object{"java/io/OutputStreamWriter"}
+    {
+        JObject(m_env->NewObject(m_class, m_env->GetMethodID(m_class, "<init>", "(Ljava/io/OutputStream;)V"), object));
+    }
+
+    void OutputStreamWriter::Write(std::string postBody)
+    {
+        jmethodID writeMethod = m_env->GetMethodID(m_class, "write", "(Ljava/lang/String;)V");
+        jstring postBodyJstr = m_env->NewStringUTF(postBody.c_str());
+        m_env->CallVoidMethod(JObject(), writeMethod, postBodyJstr);
+        ThrowIfFaulted(m_env);
+    }
+
+    void OutputStreamWriter::Close()
+    {
+        m_env->CallVoidMethod(JObject(), m_env->GetMethodID(m_class, "close", "()V"));
+        ThrowIfFaulted(m_env);
+    }
 }
 
 namespace java::net
@@ -337,6 +362,17 @@ namespace java::net
         auto responseCode = m_env->CallIntMethod(JObject(), m_env->GetMethodID(m_class, "getResponseCode", "()I"));
         ThrowIfFaulted(m_env);
         return responseCode;
+    }
+
+    void HttpURLConnection::SetRequestMethod(std::string requestMethod)
+    {
+        if (requestMethod.compare("POST") != 0 && requestMethod.compare("GET") != 0)
+        {
+            throw std::runtime_error("Only POST and GET are supported as arguments to setRequestMethod.");
+        }
+        jstring requestMethodJstr = m_env->NewStringUTF(requestMethod.c_str());
+        m_env->CallVoidMethod(JObject(),  m_env->GetMethodID(m_class, "setRequestMethod", "(Ljava/lang/String;)V"), requestMethodJstr);
+        ThrowIfFaulted(m_env);
     }
 
     URL::URL(lang::String url)
@@ -416,6 +452,13 @@ namespace java::net
         auto inputStream{m_env->CallObjectMethod(JObject(), m_env->GetMethodID(m_class, "getInputStream", "()Ljava/io/InputStream;"))};
         ThrowIfFaulted(m_env);
         return {inputStream};
+    }
+
+    io::OutputStream URLConnection::GetOutputStream() const
+    {
+        auto outputStream{m_env->CallObjectMethod(JObject(), m_env->GetMethodID(m_class, "getOutputStream", "()Ljava/io/OutputStream;"))};
+        ThrowIfFaulted(m_env);
+        return {outputStream};
     }
 
     lang::String URLConnection::GetHeaderField(int n) const
