@@ -408,7 +408,7 @@ namespace java::net
 
     bool URLConnection::GetDoOutput() const
     {
-        auto output{m_env->CallBooleanMethod(JObject(), m_env->GetMethodID(m_class, "getDoOutput", "()Z"))};
+        auto output = m_env->CallBooleanMethod(JObject(), m_env->GetMethodID(m_class, "getDoOutput", "()Z"));
         ThrowIfFaulted(m_env);
         return {static_cast<bool>(output)};
     }
