@@ -218,7 +218,7 @@ namespace java::net
 
         int GetResponseCode() const;
 
-        void SetRequestMethod(std::string requestMethod);
+        void SetRequestMethod(const std::string& requestMethod);
     };
 
     class URL : public lang::Object
