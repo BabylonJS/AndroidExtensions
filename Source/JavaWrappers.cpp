@@ -364,7 +364,7 @@ namespace java::net
         return responseCode;
     }
 
-    void HttpURLConnection::SetRequestMethod(const std::string requestMethod)
+    void HttpURLConnection::SetRequestMethod(const std::string& requestMethod)
     {
         if (requestMethod != "POST" && requestMethod != "GET")
         {
@@ -419,7 +419,7 @@ namespace java::net
         ThrowIfFaulted(m_env);
     }
 
-    void URLConnection::SetRequestProperty(const std::string key, const std::string value)
+    void URLConnection::SetRequestProperty(const std::string& key, const std::string& value)
     {
         jstring propertyName = m_env->NewStringUTF(key.c_str());
         jstring propertyValue = m_env->NewStringUTF(value.c_str());
