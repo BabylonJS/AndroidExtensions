@@ -320,7 +320,7 @@ namespace java::io
     }
 
     OutputStream::OutputStream(jobject object)
-            : Object{object}
+        : Object{object}
     {
     }
 
