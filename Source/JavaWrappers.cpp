@@ -366,7 +366,7 @@ namespace java::net
 
     void HttpURLConnection::SetRequestMethod(std::string requestMethod)
     {
-        if (requestMethod.compare("POST") != 0 && requestMethod.compare("GET") != 0)
+        if (requestMethod != "POST" && requestMethod != "GET")
         {
             throw std::runtime_error("Only POST and GET are supported as arguments to setRequestMethod.");
         }
