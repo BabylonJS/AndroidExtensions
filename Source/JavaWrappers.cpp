@@ -371,7 +371,7 @@ namespace java::net
             throw std::runtime_error("Only POST and GET are supported as arguments to setRequestMethod.");
         }
         jstring requestMethodJstr = m_env->NewStringUTF(requestMethod.c_str());
-        m_env->CallVoidMethod(JObject(),  m_env->GetMethodID(m_class, "setRequestMethod", "(Ljava/lang/String;)V"), requestMethodJstr);
+        m_env->CallVoidMethod(JObject(), m_env->GetMethodID(m_class, "setRequestMethod", "(Ljava/lang/String;)V"), requestMethodJstr);
         ThrowIfFaulted(m_env);
     }
 
