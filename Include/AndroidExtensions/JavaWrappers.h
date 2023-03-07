@@ -243,7 +243,7 @@ namespace java::net
 
         void SetDoOutput(bool n);
 
-        void SetRequestProperty(std::string key, std::string value);
+        void SetRequestProperty(const std::string& key, const std::string& value);
 
         URL GetURL() const;
 
