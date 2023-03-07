@@ -325,7 +325,7 @@ namespace java::io
     }
 
     OutputStreamWriter::OutputStreamWriter(jobject object)
-            : Object{"java/io/OutputStreamWriter"}
+        : Object{"java/io/OutputStreamWriter"}
     {
         JObject(m_env->NewObject(m_class, m_env->GetMethodID(m_class, "<init>", "(Ljava/io/OutputStream;)V"), object));
     }
@@ -364,7 +364,7 @@ namespace java::net
         return responseCode;
     }
 
-    void HttpURLConnection::SetRequestMethod(std::string requestMethod)
+    void HttpURLConnection::SetRequestMethod(const std::string requestMethod)
     {
         if (requestMethod != "POST" && requestMethod != "GET")
         {
@@ -419,7 +419,7 @@ namespace java::net
         ThrowIfFaulted(m_env);
     }
 
-    void URLConnection::SetRequestProperty(std::string key, std::string value)
+    void URLConnection::SetRequestProperty(const std::string key, const std::string value)
     {
         jstring propertyName = m_env->NewStringUTF(key.c_str());
         jstring propertyValue = m_env->NewStringUTF(value.c_str());
