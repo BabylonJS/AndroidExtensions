@@ -456,7 +456,7 @@ namespace java::net
 
     io::OutputStream URLConnection::GetOutputStream() const
     {
-        auto outputStream{m_env->CallObjectMethod(JObject(), m_env->GetMethodID(m_class, "getOutputStream", "()Ljava/io/OutputStream;"))};
+        auto outputStream =m_env->CallObjectMethod(JObject(), m_env->GetMethodID(m_class, "getOutputStream", "()Ljava/io/OutputStream;"));
         ThrowIfFaulted(m_env);
         return {outputStream};
     }
