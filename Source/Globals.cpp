@@ -68,7 +68,7 @@ namespace android::global
         {
             if (!webSocketClass) {
                 env->ExceptionClear();
-                std::cerr << "testing exception" << std::endl;
+                std::cerr << "Java Websocket class not found." << std::endl;
             } else {
                 g_webSocketClass = (jclass) env->NewGlobalRef(webSocketClass);
             }
