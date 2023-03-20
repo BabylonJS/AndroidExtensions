@@ -10,6 +10,8 @@ namespace android::global
 
     JNIEnv* GetEnvForCurrentThread();
 
+    jclass GetWebSocketClass();
+
     android::content::Context GetAppContext();
 
     android::app::Activity GetCurrentActivity();

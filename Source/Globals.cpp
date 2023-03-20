@@ -1,5 +1,6 @@
 #include <AndroidExtensions/Globals.h>
 #include <stdexcept>
+#include <iostream>
 
 namespace android::global
 {
@@ -8,6 +9,7 @@ namespace android::global
         JavaVM* g_javaVM{};
         jobject g_appContext{};
         jobject g_currentActivity{};
+        jclass g_webSocketClass{};
 
         thread_local struct Env final
         {
@@ -59,7 +61,23 @@ namespace android::global
     void Initialize(JavaVM* javaVM, jobject context)
     {
         g_javaVM = javaVM;
-        g_appContext = GetEnvForCurrentThread()->NewGlobalRef(android::content::Context{context}.getApplicationContext());
+        JNIEnv* env{GetEnvForCurrentThread()};
+        g_appContext = env->NewGlobalRef(android::content::Context{context}.getApplicationContext());
+        // initialize java websocket class here and cache it
+        jclass webSocketClass = env->FindClass("com/jsruntimehost/unittests/WebSockett");
+        {
+            if (!webSocketClass) {
+                env->ExceptionClear();
+                std::cerr << "testing exception" << std::endl;
+            } else {
+                g_webSocketClass = (jclass) env->NewGlobalRef(webSocketClass);
+            }
+        }
+    }
+
+    jclass GetWebSocketClass()
+    {
+        return g_webSocketClass;
     }
 
     JNIEnv* GetEnvForCurrentThread()
