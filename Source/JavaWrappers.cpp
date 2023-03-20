@@ -142,6 +142,13 @@ namespace java::lang
     {
     }
 
+    Object::Object(jclass classRef)
+        : m_env{GetEnvForCurrentThread()}
+        , m_class{classRef}
+        , m_object{nullptr}
+    {
+    }
+
     Object::Object(jobject object)
         : m_env{GetEnvForCurrentThread()}
         , m_class{m_env->GetObjectClass(object)}
@@ -271,6 +278,31 @@ namespace java::lang
     const char* Throwable::what() const noexcept
     {
         return m_message.c_str();
+    }
+}
+
+namespace java::websocket
+{
+    WebSocket::WebSocket(std::string url)
+        : Object{android::global::GetWebSocketClass()}
+    {
+        // initialize socket
+        JObject(m_env->NewObject(m_class, m_env->GetMethodID(m_class, "<init>", "(Ljava/lang/String;)V"), m_env->NewStringUTF(url.c_str())));
+        // connect websocket TODO: lmaskati switch to non-blocking call later
+        jmethodID connectSocket{m_env->GetMethodID(m_class, "connectBlocking", "()Z")};
+        m_env->CallBooleanMethod(JObject(), connectSocket);
+    }
+
+    void WebSocket::Send(std::string message)
+    {
+        jmethodID sendMessage{m_env->GetMethodID(m_class, "send", "(Ljava/lang/String;)V")};
+        m_env->CallVoidMethod(JObject(), sendMessage, m_env->NewStringUTF(message.c_str()));
+    }
+
+    void WebSocket::Close()
+    {
+        jmethodID closeWebSocket{m_env->GetMethodID(m_class, "close", "()V")};
+        m_env->CallVoidMethod(JObject(), closeWebSocket);
     }
 }
 
@@ -591,7 +623,7 @@ namespace android::content::res
 namespace android::view
 {
     Display::Display(jobject object)
-            : Object(object)
+        : Object(object)
     {
     }
 

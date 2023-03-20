@@ -19,6 +19,11 @@ namespace java::lang
     class Throwable;
 }
 
+namespace java::websocket
+{
+    class WebSocket;
+}
+
 namespace java::io
 {
     class ByteArrayOutputStream;
@@ -116,6 +121,7 @@ namespace java::lang
 
     protected:
         Object(const char* className);
+        Object(jclass classObj);
         Object(jobject object);
 
         Object(const Object&);
@@ -163,6 +169,17 @@ namespace java::lang
     private:
         jobject m_throwableRef;
         std::string m_message;
+    };
+}
+
+namespace java::websocket
+{
+    class WebSocket : public lang::Object
+    {
+    public:
+        WebSocket(std::string url);
+        void Send(std::string message);
+        void Close();
     };
 }
 
