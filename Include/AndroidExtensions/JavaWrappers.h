@@ -21,7 +21,7 @@ namespace java::lang
 
 namespace java::websocket
 {
-    class WebSocket;
+    class WebSocketClient;
 }
 
 namespace java::io
@@ -174,10 +174,10 @@ namespace java::lang
 
 namespace java::websocket
 {
-    class WebSocket : public lang::Object
+    class WebSocketClient : public lang::Object
     {
     public:
-        WebSocket(std::string url);
+        WebSocketClient(std::string url);
         void Send(std::string message);
         void Close();
     };

@@ -283,7 +283,7 @@ namespace java::lang
 
 namespace java::websocket
 {
-    WebSocket::WebSocket(std::string url)
+    WebSocketClient::WebSocketClient(std::string url)
         : Object{android::global::GetWebSocketClass()}
     {
         // initialize socket
@@ -293,13 +293,13 @@ namespace java::websocket
         m_env->CallBooleanMethod(JObject(), connectSocket);
     }
 
-    void WebSocket::Send(std::string message)
+    void WebSocketClient::Send(std::string message)
     {
         jmethodID sendMessage{m_env->GetMethodID(m_class, "send", "(Ljava/lang/String;)V")};
         m_env->CallVoidMethod(JObject(), sendMessage, m_env->NewStringUTF(message.c_str()));
     }
 
-    void WebSocket::Close()
+    void WebSocketClient::Close()
     {
         jmethodID closeWebSocket{m_env->GetMethodID(m_class, "close", "()V")};
         m_env->CallVoidMethod(JObject(), closeWebSocket);
