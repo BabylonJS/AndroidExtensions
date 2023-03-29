@@ -283,12 +283,12 @@ namespace java::lang
 
 namespace java::websocket
 {
-    WebSocketClient::WebSocketClient(std::string url, std::function<void(std::string)> message, std::function<void()> open, std::function<void()> close, std::function<void()> error)
+    WebSocketClient::WebSocketClient(std::string url, std::function<void()> open_callback, std::function<void()> close_callback, std::function<void(std::string)> message_callback, std::function<void()> error_callback)
         : Object{android::global::GetWebSocketClass()}
-        , m_openCallback{std::move(open)}
-        , m_messageCallback{std::move(message)}
-        , m_closeCallback{std::move(close)}
-        , m_errorCallback{std::move(error)}
+        , m_openCallback{std::move(open_callback)}
+        , m_messageCallback{std::move(message_callback)}
+        , m_closeCallback{std::move(close_callback)}
+        , m_errorCallback{std::move(error_callback)}
     {
         static JNINativeMethod methods[] = {
                 {"closeCallback", "()V", (void*)OnClose },

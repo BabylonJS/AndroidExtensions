@@ -178,7 +178,7 @@ namespace java::websocket
     class WebSocketClient : public lang::Object
     {
     public:
-        WebSocketClient(std::string url, std::function<void(std::string)> message_callback, std::function<void()> open_callback, std::function<void()> close_callback, std::function<void()> error_callback);
+        WebSocketClient(std::string url, std::function<void()> open_callback, std::function<void()> close_callback, std::function<void(std::string)> message_callback, std::function<void()> error_callback);
         void Send(std::string message);
         void Close();
 
