@@ -64,7 +64,7 @@ namespace android::global
         JNIEnv* env{GetEnvForCurrentThread()};
         g_appContext = env->NewGlobalRef(android::content::Context{context}.getApplicationContext());
         // initialize java websocket class here and cache it
-        jclass webSocketClass = env->FindClass("com/jsruntimehost/unittests/WebSocket");
+        jclass webSocketClass{env->FindClass("com/jsruntimehost/unittests/WebSocket")};
         {
             if (!webSocketClass) {
                 env->ExceptionClear();
