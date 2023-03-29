@@ -308,24 +308,30 @@ namespace java::websocket
         m_env->CallBooleanMethod(JObject(), connectSocket);
     }
 
-    void WebSocketClient::OnOpen(JNIEnv* env, jobject obj) {
+    void WebSocketClient::OnOpen(JNIEnv* env, jobject obj) 
+    {
         auto itObject = WebSocketClient::FindClientInstance(env, obj);
-        if (itObject != WebSocketClient::s_objectMap.end()) {
+        if (itObject != WebSocketClient::s_objectMap.end()) 
+        {
             itObject->second->m_openCallback();
         }
     }
 
-    void WebSocketClient::OnMessage(JNIEnv* env, jobject obj, jstring message) {
+    void WebSocketClient::OnMessage(JNIEnv* env, jobject obj, jstring message) 
+    {
         auto itObject = WebSocketClient::FindClientInstance(env, obj);
-        if (itObject != WebSocketClient::s_objectMap.end()) {
+        if (itObject != WebSocketClient::s_objectMap.end()) 
+        {
             java::lang::String mystr{message};
             itObject->second->m_messageCallback(mystr);
         }
     }
 
-    void WebSocketClient::OnClose(JNIEnv* env, jobject obj) {
+    void WebSocketClient::OnClose(JNIEnv* env, jobject obj) 
+    {
         auto itObject = WebSocketClient::FindClientInstance(env, obj);
-        if (itObject != WebSocketClient::s_objectMap.end()) {
+        if (itObject != WebSocketClient::s_objectMap.end()) 
+        {
             itObject->second->m_closeCallback();
 
             // delete the websocket object from map
@@ -333,14 +339,17 @@ namespace java::websocket
         }
     }
 
-    void WebSocketClient::OnError(JNIEnv* env, jobject obj) {
+    void WebSocketClient::OnError(JNIEnv* env, jobject obj) 
+    {
         auto itObject = WebSocketClient::FindClientInstance(env, obj);
-        if (itObject != WebSocketClient::s_objectMap.end()) {
+        if (itObject != WebSocketClient::s_objectMap.end()) 
+        {
             itObject->second->m_errorCallback();
         }
     }
 
-    std::unordered_map<jobject, java::websocket::WebSocketClient*>::iterator  WebSocketClient::FindClientInstance(JNIEnv* env, jobject obj) {
+    std::unordered_map<jobject, java::websocket::WebSocketClient*>::iterator  WebSocketClient::FindClientInstance(JNIEnv* env, jobject obj) 
+    {
         const auto it = std::find_if(WebSocketClient::s_objectMap.begin(), WebSocketClient::s_objectMap.end(), [&obj, &env](const auto &it)
         {
             return env->IsSameObject (obj, it.first);; // Comparing with the object
