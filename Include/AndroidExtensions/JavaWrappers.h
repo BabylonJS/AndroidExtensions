@@ -7,6 +7,7 @@
 #include <android/asset_manager.h>
 #include <android/native_window.h>
 #include <unordered_map>
+#include <utility>
 
 // --------------------
 // Forward Declarations
@@ -179,6 +180,7 @@ namespace java::websocket
     {
     public:
         WebSocketClient(std::string url, std::function<void()> open_callback, std::function<void()> close_callback, std::function<void(std::string)> message_callback, std::function<void()> error_callback);
+        ~WebSocketClient();
         void Send(std::string message);
         void Close();
 
@@ -188,8 +190,9 @@ namespace java::websocket
         static void OnClose(JNIEnv* env, jobject obj);
         static void OnError(JNIEnv* env, jobject obj);
 
-        static std::unordered_map<jobject, java::websocket::WebSocketClient*>::iterator FindClientInstance(JNIEnv* env, jobject obj);
-        static std::unordered_map<jobject, java::websocket::WebSocketClient*> s_objectMap;
+        static java::websocket::WebSocketClient* FindClientInstance(JNIEnv* env, jobject obj);
+        static std::vector<std::pair<jobject, java::websocket::WebSocketClient*>> s_objectVector;
+
         std::function<void()> m_openCallback;
         std::function<void(std::string)> m_messageCallback;
         std::function<void()> m_closeCallback;

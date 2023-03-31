@@ -4,6 +4,7 @@
 #include <android/surface_texture_jni.h>
 #include <android/asset_manager_jni.h>
 #include <android/native_window_jni.h>
+#include <algorithm>
 
 using namespace android::global;
 
@@ -298,63 +299,71 @@ namespace java::websocket
         };
         m_env->RegisterNatives(m_class, methods, 4);
 
-        // initialize socket
         JObject(m_env->NewObject(m_class, m_env->GetMethodID(m_class, "<init>", "(Ljava/lang/String;)V"), m_env->NewStringUTF(url.c_str())));
 
-        WebSocketClient *p_webSocketClient = this;
-        s_objectMap.insert({JObject(), p_webSocketClient});
+        s_objectVector.push_back(std::make_pair(JObject(), this));
 
         jmethodID connectSocket{m_env->GetMethodID(m_class, "connectBlocking", "()Z")};
         m_env->CallBooleanMethod(JObject(), connectSocket);
     }
 
+    WebSocketClient::~WebSocketClient()
+    {
+        WebSocketClient::s_objectVector.erase(std::remove_if(WebSocketClient::s_objectVector.begin(), WebSocketClient::s_objectVector.end(), [this](const auto& p) { return p.second == this; }), WebSocketClient::s_objectVector.end());
+    }
+
     void WebSocketClient::OnOpen(JNIEnv* env, jobject obj) 
     {
         auto itObject = WebSocketClient::FindClientInstance(env, obj);
-        if (itObject != WebSocketClient::s_objectMap.end()) 
+        if (itObject != nullptr)
         {
-            itObject->second->m_openCallback();
+            itObject->m_openCallback();
         }
     }
 
     void WebSocketClient::OnMessage(JNIEnv* env, jobject obj, jstring message) 
     {
         auto itObject = WebSocketClient::FindClientInstance(env, obj);
-        if (itObject != WebSocketClient::s_objectMap.end()) 
+        if (itObject != nullptr)
         {
             java::lang::String mystr{message};
-            itObject->second->m_messageCallback(mystr);
+            itObject->m_messageCallback(mystr);
         }
     }
 
     void WebSocketClient::OnClose(JNIEnv* env, jobject obj) 
     {
         auto itObject = WebSocketClient::FindClientInstance(env, obj);
-        if (itObject != WebSocketClient::s_objectMap.end()) 
+        if (itObject != nullptr)
         {
-            itObject->second->m_closeCallback();
-
-            // delete the websocket object from map
-            WebSocketClient::s_objectMap.erase(itObject);
+            itObject->m_closeCallback();
         }
     }
 
     void WebSocketClient::OnError(JNIEnv* env, jobject obj) 
     {
         auto itObject = WebSocketClient::FindClientInstance(env, obj);
-        if (itObject != WebSocketClient::s_objectMap.end()) 
+        if (itObject != nullptr)
         {
-            itObject->second->m_errorCallback();
+            itObject->m_errorCallback();
         }
     }
 
-    std::unordered_map<jobject, java::websocket::WebSocketClient*>::iterator  WebSocketClient::FindClientInstance(JNIEnv* env, jobject obj) 
+    java::websocket::WebSocketClient* WebSocketClient::FindClientInstance(JNIEnv* env, jobject obj)
     {
-        const auto it = std::find_if(WebSocketClient::s_objectMap.begin(), WebSocketClient::s_objectMap.end(), [&obj, &env](const auto &it)
+        const auto it = std::find_if(WebSocketClient::s_objectVector.begin(), WebSocketClient::s_objectVector.end(), [&obj, &env](const auto &it)
         {
             return env->IsSameObject (obj, it.first);; // Comparing with the object
         });
-        return it;
+
+        if (it != WebSocketClient::s_objectVector.end())
+        {
+            return it->second;
+        }
+        else
+        {
+            return nullptr;
+        }
     }
 
     void WebSocketClient::Send(std::string message)
@@ -370,7 +379,7 @@ namespace java::websocket
     }
 }
 
-std::unordered_map<jobject, java::websocket::WebSocketClient*> java::websocket::WebSocketClient::s_objectMap;
+std::vector<std::pair<jobject, java::websocket::WebSocketClient*>> java::websocket::WebSocketClient::s_objectVector;
 
 namespace java::io
 {
