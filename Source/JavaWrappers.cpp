@@ -5,6 +5,7 @@
 #include <android/asset_manager_jni.h>
 #include <android/native_window_jni.h>
 #include <algorithm>
+#include <vector>
 
 using namespace android::global;
 
