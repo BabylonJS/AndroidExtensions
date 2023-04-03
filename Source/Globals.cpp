@@ -1,6 +1,5 @@
 #include <AndroidExtensions/Globals.h>
 #include <stdexcept>
-#include <iostream>
 
 namespace android::global
 {
