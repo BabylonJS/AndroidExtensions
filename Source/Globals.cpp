@@ -60,8 +60,7 @@ namespace android::global
     void Initialize(JavaVM* javaVM, jobject context)
     {
         g_javaVM = javaVM;
-        JNIEnv* env{GetEnvForCurrentThread()};
-        g_appContext = env->NewGlobalRef(android::content::Context{context}.getApplicationContext());
+        g_appContext = GetEnvForCurrentThread()->NewGlobalRef(android::content::Context{context}.getApplicationContext());
     }
 
     JNIEnv* GetEnvForCurrentThread()

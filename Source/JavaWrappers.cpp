@@ -284,13 +284,7 @@ namespace java::lang
 
 namespace java::websocket
 {
-    jclass g_webSocketClass{};
-    void InitializeJavaWebSocketClass(jclass webSocketClass, JNIEnv* env) {
-        g_webSocketClass = (jclass) env->NewGlobalRef(webSocketClass);
-    }
-    void DestructJavaWebSocketClass(JNIEnv* env) {
-        env->DeleteGlobalRef(g_webSocketClass);
-    }
+    jclass WebSocketClient::g_webSocketClass{};
     std::vector<std::pair<jobject, WebSocketClient*>> WebSocketClient::s_instances;
 
     WebSocketClient::WebSocketClient(std::string url, std::function<void()> open_callback, std::function<void()> close_callback, std::function<void(std::string)> message_callback, std::function<void()> error_callback)
@@ -302,10 +296,10 @@ namespace java::websocket
     {
         static JNINativeMethod methods[] =
         {
-            {"closeCallback", "()V", (void*)OnClose },
-            {"openCallback", "()V", (void*)&WebSocketClient::OnOpen },
-            {"messageCallback", "(Ljava/lang/String;)V", (void*)&WebSocketClient::OnMessage },
-            {"errorCallback", "()V", (void*)&WebSocketClient::OnError },
+            {"closeCallback", "()V", (void*)OnClose},
+            {"openCallback", "()V", (void*)OnOpen},
+            {"messageCallback", "(Ljava/lang/String;)V", (void*)OnMessage},
+            {"errorCallback", "()V", (void*)OnError},
         };
         m_env->RegisterNatives(m_class, methods, 4);
 
@@ -319,12 +313,12 @@ namespace java::websocket
 
     WebSocketClient::~WebSocketClient()
     {
-        WebSocketClient::s_instances.erase(std::remove_if(WebSocketClient::s_instances.begin(), WebSocketClient::s_instances.end(), [this](const auto& p) { return p.second == this; }), WebSocketClient::s_instances.end());
+        s_instances.erase(std::remove_if(s_instances.begin(), s_instances.end(), [this](const auto& p) { return p.second == this; }), s_instances.end());
     }
 
     void WebSocketClient::OnOpen(JNIEnv* env, jobject obj) 
     {
-        auto itObject = WebSocketClient::FindInstance(env, obj);
+        auto itObject = FindInstance(env, obj);
         if (itObject != nullptr)
         {
             itObject->m_openCallback();
@@ -333,7 +327,7 @@ namespace java::websocket
 
     void WebSocketClient::OnMessage(JNIEnv* env, jobject obj, jstring message) 
     {
-        auto itObject = WebSocketClient::FindInstance(env, obj);
+        auto itObject = FindInstance(env, obj);
         if (itObject != nullptr)
         {
             java::lang::String mystr{message};
@@ -343,7 +337,7 @@ namespace java::websocket
 
     void WebSocketClient::OnClose(JNIEnv* env, jobject obj) 
     {
-        auto itObject = WebSocketClient::FindInstance(env, obj);
+        auto itObject = FindInstance(env, obj);
         if (itObject != nullptr)
         {
             itObject->m_closeCallback();
@@ -352,7 +346,7 @@ namespace java::websocket
 
     void WebSocketClient::OnError(JNIEnv* env, jobject obj) 
     {
-        auto itObject = WebSocketClient::FindInstance(env, obj);
+        auto itObject = FindInstance(env, obj);
         if (itObject != nullptr)
         {
             itObject->m_errorCallback();
@@ -361,12 +355,12 @@ namespace java::websocket
 
     java::websocket::WebSocketClient* WebSocketClient::FindInstance(JNIEnv* env, jobject obj)
     {
-        const auto it = std::find_if(WebSocketClient::s_instances.begin(), WebSocketClient::s_instances.end(), [&obj, &env](const auto &it)
+        const auto it = std::find_if(s_instances.begin(), s_instances.end(), [&obj, &env](const auto &it)
         {
             return env->IsSameObject(obj, it.first);; // Comparing with the object
         });
 
-        if (it != WebSocketClient::s_instances.end())
+        if (it != s_instances.end())
         {
             return it->second;
         }
@@ -386,6 +380,15 @@ namespace java::websocket
     {
         jmethodID closeWebSocket{m_env->GetMethodID(m_class, "close", "()V")};
         m_env->CallVoidMethod(JObject(), closeWebSocket);
+    }
+
+    void WebSocketClient::InitializeJavaWebSocketClass(jclass webSocketClass, JNIEnv* env)
+    {
+        g_webSocketClass = (jclass) env->NewGlobalRef(webSocketClass);
+    }
+    void WebSocketClient::DestructJavaWebSocketClass(JNIEnv* env)
+    {
+        env->DeleteGlobalRef(g_webSocketClass);
     }
 }
 

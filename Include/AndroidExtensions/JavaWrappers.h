@@ -6,7 +6,6 @@
 #include <cstddef>
 #include <android/asset_manager.h>
 #include <android/native_window.h>
-#include <unordered_map>
 #include <utility>
 
 // --------------------
@@ -184,6 +183,11 @@ namespace java::websocket
         void Send(std::string message);
         void Close();
 
+        static jclass g_webSocketClass;
+        static std::vector<std::pair<jobject, WebSocketClient*>> s_instances;
+        static void InitializeJavaWebSocketClass(jclass webSocketClass, JNIEnv* env);
+        static void DestructJavaWebSocketClass(JNIEnv* env);
+
     private:
         static void OnOpen(JNIEnv* env, jobject obj);
         static void OnMessage(JNIEnv* env, jobject obj, jstring message);
@@ -191,16 +195,12 @@ namespace java::websocket
         static void OnError(JNIEnv* env, jobject obj);
 
         static WebSocketClient* FindInstance(JNIEnv* env, jobject obj);
-        static std::vector<std::pair<jobject, WebSocketClient*>> s_instances;
 
         std::function<void()> m_openCallback;
         std::function<void(std::string)> m_messageCallback;
         std::function<void()> m_closeCallback;
         std::function<void()> m_errorCallback;
     };
-
-    void InitializeJavaWebSocketClass(jclass webSocketClass, JNIEnv* env);
-    void DestructJavaWebSocketClass(JNIEnv* env);
 }
 
 namespace java::io
