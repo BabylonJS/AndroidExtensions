@@ -363,7 +363,7 @@ namespace java::websocket
     {
         const auto it = std::find_if(WebSocketClient::s_objectVector.begin(), WebSocketClient::s_objectVector.end(), [&obj, &env](const auto &it)
         {
-            return env->IsSameObject (obj, it.first);; // Comparing with the object
+            return env->IsSameObject(obj, it.first);; // Comparing with the object
         });
 
         if (it != WebSocketClient::s_objectVector.end())
