@@ -300,11 +300,12 @@ namespace java::websocket
         , m_closeCallback{std::move(close_callback)}
         , m_errorCallback{std::move(error_callback)}
     {
-        static JNINativeMethod methods[] = {
-                {"closeCallback", "()V", (void*)OnClose },
-                {"openCallback", "()V", (void*)&WebSocketClient::OnOpen },
-                {"messageCallback", "(Ljava/lang/String;)V", (void*)&WebSocketClient::OnMessage },
-                {"errorCallback", "()V", (void*)&WebSocketClient::OnError },
+        static JNINativeMethod methods[] =
+        {
+            {"closeCallback", "()V", (void*)OnClose },
+            {"openCallback", "()V", (void*)&WebSocketClient::OnOpen },
+            {"messageCallback", "(Ljava/lang/String;)V", (void*)&WebSocketClient::OnMessage },
+            {"errorCallback", "()V", (void*)&WebSocketClient::OnError },
         };
         m_env->RegisterNatives(m_class, methods, 4);
 
@@ -362,7 +363,7 @@ namespace java::websocket
     {
         const auto it = std::find_if(WebSocketClient::s_instances.begin(), WebSocketClient::s_instances.end(), [&obj, &env](const auto &it)
         {
-            return env->IsSameObject (obj, it.first);; // Comparing with the object
+            return env->IsSameObject(obj, it.first);; // Comparing with the object
         });
 
         if (it != WebSocketClient::s_instances.end())
