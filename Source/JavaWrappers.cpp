@@ -291,7 +291,7 @@ namespace java::websocket
     void DestructJavaWebSocketClass(JNIEnv* env) {
         env->DeleteGlobalRef(g_webSocketClass);
     }
-    std::vector<std::pair<jobject, WebSocketClient*>> WebSocketClient::s_objectVector;
+    std::vector<std::pair<jobject, WebSocketClient*>> WebSocketClient::s_instances;
 
     WebSocketClient::WebSocketClient(std::string url, std::function<void()> open_callback, std::function<void()> close_callback, std::function<void(std::string)> message_callback, std::function<void()> error_callback)
         : Object{g_webSocketClass}
@@ -310,7 +310,7 @@ namespace java::websocket
 
         JObject(m_env->NewObject(m_class, m_env->GetMethodID(m_class, "<init>", "(Ljava/lang/String;)V"), m_env->NewStringUTF(url.c_str())));
 
-        s_objectVector.push_back(std::make_pair(JObject(), this));
+        s_instances.push_back(std::make_pair(JObject(), this));
 
         jmethodID connectSocket{m_env->GetMethodID(m_class, "connectBlocking", "()Z")};
         m_env->CallBooleanMethod(JObject(), connectSocket);
@@ -318,12 +318,12 @@ namespace java::websocket
 
     WebSocketClient::~WebSocketClient()
     {
-        WebSocketClient::s_objectVector.erase(std::remove_if(WebSocketClient::s_objectVector.begin(), WebSocketClient::s_objectVector.end(), [this](const auto& p) { return p.second == this; }), WebSocketClient::s_objectVector.end());
+        WebSocketClient::s_instances.erase(std::remove_if(WebSocketClient::s_instances.begin(), WebSocketClient::s_instances.end(), [this](const auto& p) { return p.second == this; }), WebSocketClient::s_instances.end());
     }
 
     void WebSocketClient::OnOpen(JNIEnv* env, jobject obj) 
     {
-        auto itObject = WebSocketClient::FindClientInstance(env, obj);
+        auto itObject = WebSocketClient::FindInstance(env, obj);
         if (itObject != nullptr)
         {
             itObject->m_openCallback();
@@ -332,7 +332,7 @@ namespace java::websocket
 
     void WebSocketClient::OnMessage(JNIEnv* env, jobject obj, jstring message) 
     {
-        auto itObject = WebSocketClient::FindClientInstance(env, obj);
+        auto itObject = WebSocketClient::FindInstance(env, obj);
         if (itObject != nullptr)
         {
             java::lang::String mystr{message};
@@ -342,7 +342,7 @@ namespace java::websocket
 
     void WebSocketClient::OnClose(JNIEnv* env, jobject obj) 
     {
-        auto itObject = WebSocketClient::FindClientInstance(env, obj);
+        auto itObject = WebSocketClient::FindInstance(env, obj);
         if (itObject != nullptr)
         {
             itObject->m_closeCallback();
@@ -351,21 +351,21 @@ namespace java::websocket
 
     void WebSocketClient::OnError(JNIEnv* env, jobject obj) 
     {
-        auto itObject = WebSocketClient::FindClientInstance(env, obj);
+        auto itObject = WebSocketClient::FindInstance(env, obj);
         if (itObject != nullptr)
         {
             itObject->m_errorCallback();
         }
     }
 
-    java::websocket::WebSocketClient* WebSocketClient::FindClientInstance(JNIEnv* env, jobject obj)
+    java::websocket::WebSocketClient* WebSocketClient::FindInstance(JNIEnv* env, jobject obj)
     {
-        const auto it = std::find_if(WebSocketClient::s_objectVector.begin(), WebSocketClient::s_objectVector.end(), [&obj, &env](const auto &it)
+        const auto it = std::find_if(WebSocketClient::s_instances.begin(), WebSocketClient::s_instances.end(), [&obj, &env](const auto &it)
         {
             return env->IsSameObject (obj, it.first);; // Comparing with the object
         });
 
-        if (it != WebSocketClient::s_objectVector.end())
+        if (it != WebSocketClient::s_instances.end())
         {
             return it->second;
         }
