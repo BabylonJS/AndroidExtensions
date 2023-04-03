@@ -284,8 +284,17 @@ namespace java::lang
 
 namespace java::websocket
 {
+    jclass g_webSocketClass{};
+    void InitializeJavaWebSocketClass(jclass webSocketClass, JNIEnv* env) {
+        g_webSocketClass = (jclass) env->NewGlobalRef(webSocketClass);
+    }
+    void DestructJavaWebSocketClass(JNIEnv* env) {
+        env->DeleteGlobalRef(g_webSocketClass);
+    }
+    std::vector<std::pair<jobject, WebSocketClient*>> WebSocketClient::s_objectVector;
+
     WebSocketClient::WebSocketClient(std::string url, std::function<void()> open_callback, std::function<void()> close_callback, std::function<void(std::string)> message_callback, std::function<void()> error_callback)
-        : Object{android::global::GetWebSocketClass()}
+        : Object{g_webSocketClass}
         , m_openCallback{std::move(open_callback)}
         , m_messageCallback{std::move(message_callback)}
         , m_closeCallback{std::move(close_callback)}
@@ -378,8 +387,6 @@ namespace java::websocket
         m_env->CallVoidMethod(JObject(), closeWebSocket);
     }
 }
-
-std::vector<std::pair<jobject, java::websocket::WebSocketClient*>> java::websocket::WebSocketClient::s_objectVector;
 
 namespace java::io
 {

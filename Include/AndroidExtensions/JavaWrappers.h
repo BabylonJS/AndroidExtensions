@@ -190,15 +190,17 @@ namespace java::websocket
         static void OnClose(JNIEnv* env, jobject obj);
         static void OnError(JNIEnv* env, jobject obj);
 
-        static java::websocket::WebSocketClient* FindClientInstance(JNIEnv* env, jobject obj);
-        static std::vector<std::pair<jobject, java::websocket::WebSocketClient*>> s_objectVector;
+        static WebSocketClient* FindClientInstance(JNIEnv* env, jobject obj);
+        static std::vector<std::pair<jobject, WebSocketClient*>> s_objectVector;
 
         std::function<void()> m_openCallback;
         std::function<void(std::string)> m_messageCallback;
         std::function<void()> m_closeCallback;
         std::function<void()> m_errorCallback;
-
     };
+
+    void InitializeJavaWebSocketClass(jclass webSocketClass, JNIEnv* env);
+    void DestructJavaWebSocketClass(JNIEnv* env);
 }
 
 namespace java::io

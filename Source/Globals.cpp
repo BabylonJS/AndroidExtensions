@@ -9,7 +9,6 @@ namespace android::global
         JavaVM* g_javaVM{};
         jobject g_appContext{};
         jobject g_currentActivity{};
-        jclass g_webSocketClass{};
 
         thread_local struct Env final
         {
@@ -63,21 +62,6 @@ namespace android::global
         g_javaVM = javaVM;
         JNIEnv* env{GetEnvForCurrentThread()};
         g_appContext = env->NewGlobalRef(android::content::Context{context}.getApplicationContext());
-        // initialize java websocket class here and cache it
-        jclass webSocketClass{env->FindClass("com/jsruntimehost/unittests/WebSocket")};
-        {
-            if (!webSocketClass) {
-                env->ExceptionClear();
-                std::cerr << "Java Websocket class not found." << std::endl;
-            } else {
-                g_webSocketClass = (jclass) env->NewGlobalRef(webSocketClass);
-            }
-        }
-    }
-
-    jclass GetWebSocketClass()
-    {
-        return g_webSocketClass;
     }
 
     JNIEnv* GetEnvForCurrentThread()
