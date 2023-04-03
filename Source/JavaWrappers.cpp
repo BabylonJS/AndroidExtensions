@@ -309,6 +309,7 @@ namespace java::websocket
 
         jmethodID connectSocket{m_env->GetMethodID(m_class, "connectBlocking", "()Z")};
         m_env->CallBooleanMethod(JObject(), connectSocket);
+        ThrowIfFaulted(m_env);
     }
 
     WebSocketClient::~WebSocketClient()
@@ -360,6 +361,8 @@ namespace java::websocket
             return env->IsSameObject(obj, it.first);
         });
 
+        ThrowIfFaulted(env);
+
         if (it != s_instances.end())
         {
             return it->second;
@@ -374,12 +377,14 @@ namespace java::websocket
     {
         jmethodID sendMessage{m_env->GetMethodID(m_class, "send", "(Ljava/lang/String;)V")};
         m_env->CallVoidMethod(JObject(), sendMessage, m_env->NewStringUTF(message.c_str()));
+        ThrowIfFaulted(m_env);
     }
 
     void WebSocketClient::Close()
     {
         jmethodID closeWebSocket{m_env->GetMethodID(m_class, "close", "()V")};
         m_env->CallVoidMethod(JObject(), closeWebSocket);
+        ThrowIfFaulted(m_env);
     }
 
     void WebSocketClient::InitializeJavaWebSocketClass(jclass webSocketClass, JNIEnv* env)
