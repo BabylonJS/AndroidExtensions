@@ -183,8 +183,6 @@ namespace java::websocket
         void Send(std::string message);
         void Close();
 
-        static jclass g_webSocketClass;
-        static std::vector<std::pair<jobject, WebSocketClient*>> s_instances;
         static void InitializeJavaWebSocketClass(jclass webSocketClass, JNIEnv* env);
         static void DestructJavaWebSocketClass(JNIEnv* env);
 
@@ -195,6 +193,8 @@ namespace java::websocket
         static void OnError(JNIEnv* env, jobject obj);
 
         static WebSocketClient* FindInstance(JNIEnv* env, jobject obj);
+        static jclass s_webSocketClass;
+        static std::vector<std::pair<jobject, WebSocketClient*>> s_instances;
 
         std::function<void()> m_openCallback;
         std::function<void(std::string)> m_messageCallback;

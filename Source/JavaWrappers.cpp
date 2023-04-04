@@ -285,11 +285,11 @@ namespace java::lang
 
 namespace java::websocket
 {
-    jclass WebSocketClient::g_webSocketClass{};
+    jclass WebSocketClient::s_webSocketClass{};
     std::vector<std::pair<jobject, WebSocketClient*>> WebSocketClient::s_instances;
 
     WebSocketClient::WebSocketClient(std::string url, std::function<void()> open_callback, std::function<void()> close_callback, std::function<void(std::string)> message_callback, std::function<void()> error_callback)
-        : Object{g_webSocketClass}
+        : Object{s_webSocketClass}
         , m_openCallback{std::move(open_callback)}
         , m_messageCallback{std::move(message_callback)}
         , m_closeCallback{std::move(close_callback)}
@@ -398,11 +398,11 @@ namespace java::websocket
 
     void WebSocketClient::InitializeJavaWebSocketClass(jclass webSocketClass, JNIEnv* env)
     {
-        g_webSocketClass = (jclass) env->NewGlobalRef(webSocketClass);
+        s_webSocketClass = (jclass) env->NewGlobalRef(webSocketClass);
     }
     void WebSocketClient::DestructJavaWebSocketClass(JNIEnv* env)
     {
-        env->DeleteGlobalRef(g_webSocketClass);
+        env->DeleteGlobalRef(s_webSocketClass);
     }
 }
 
