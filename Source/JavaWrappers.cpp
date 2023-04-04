@@ -315,7 +315,15 @@ namespace java::websocket
 
     WebSocketClient::~WebSocketClient()
     {
-        s_instances.erase(std::remove_if(s_instances.begin(), s_instances.end(), [this](const auto& p) { return p.second == this; }), s_instances.end());
+        const auto it = std::find_if(s_instances.begin(), s_instances.end(), [this](const auto &it)
+        {
+            return it.second == this;
+        });
+
+        if (it != s_instances.end())
+        {
+            s_instances.erase(it);
+        }
     }
 
     void WebSocketClient::OnOpen(JNIEnv* env, jobject obj) 
