@@ -1,4 +1,3 @@
-package com.jsruntimehost.unittests;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.framing.CloseFrame;
