@@ -10,7 +10,7 @@ namespace
     static int fd_saved[2];
 }
 
-namespace android::StdOutLogger
+namespace android::StdoutLogger
 {
     static void* ThreadFunc(void*)
     {
