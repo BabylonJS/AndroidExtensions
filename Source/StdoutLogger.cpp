@@ -1,6 +1,8 @@
 #include <AndroidExtensions/StdoutLogger.h>
 #include <unistd.h>
 #include <android/log.h>
+#include <pthread.h>
+#include <stdio.h>
 
 namespace
 {
