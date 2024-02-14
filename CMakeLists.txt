@@ -1,29 +1,32 @@
 cmake_minimum_required(VERSION 3.18)
 
+include(FetchContent)
+
+# --------------------------------------------------
+# Declarations
+# --------------------------------------------------
+FetchContent_Declare(arcana.cpp
+    GIT_REPOSITORY https://github.com/microsoft/arcana.cpp.git
+    GIT_TAG        f2757396e80bc4169f2ddb938ce25367a98ffdd0)
+FetchContent_Declare(CMakeExtensions
+    GIT_REPOSITORY https://github.com/BabylonJS/CMakeExtensions.git
+    GIT_TAG 36383052398767cbb3a7daa2bc96e62163bd549a)
+# --------------------------------------------------
+
+FetchContent_MakeAvailable(CMakeExtensions)
+
 project(AndroidExtensions)
+
+if(NOT ANDROID)
+    message(FATAL_ERROR "This project can only build for Android")
+endif()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include(FetchContent)
-
-# Modules declaration
-FetchContent_Declare(arcana
-    GIT_REPOSITORY https://github.com/microsoft/arcana.cpp.git
-    GIT_TAG        f2757396e80bc4169f2ddb938ce25367a98ffdd0)
-    
-if(NOT ANDROID)
-    message(FATAL_ERROR "This project can only build for Android")
-endif()
-
-if(NOT TARGET arcana)
-    set(${CONTENT_TO_FETCH} arcana)
-    message(STATUS "Fetching dependencies for ${PROJECT_NAME} (${CONTENT_TO_FETCH})")
-    FetchContent_MakeAvailable(${CONTENT_TO_FETCH})
-    message(STATUS "Fetching dependencies for ${PROJECT_NAME} - done")
-endif()
+FetchContent_MakeAvailable_With_Message(arcana.cpp)
 
 set(SOURCES
     "Include/AndroidExtensions/Globals.h"
