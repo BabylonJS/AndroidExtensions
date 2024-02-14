@@ -1,4 +1,6 @@
 #include <AndroidExtensions/StdoutLogger.h>
+#include <unistd.h>
+#include <android/log.h>
 
 namespace
 {
@@ -36,7 +38,7 @@ namespace android::StdOutLogger
         dup2(pfd[1], 2);
 
         // spawn the logging thread
-        if (pthread_create(&thr, 0, thread_func, 0) == -1)
+        if (pthread_create(&thr, 0, ThreadFunc, 0) == -1)
         {
             return;
         }
