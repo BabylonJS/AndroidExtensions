@@ -33,10 +33,12 @@ set(SOURCES
     "Include/AndroidExtensions/JavaWrappers.h"
     "Include/AndroidExtensions/OpenGLHelpers.h"
     "Include/AndroidExtensions/Permissions.h"
+    "Include/AndroidExtensions/StdoutLogger.h"
     "Source/Globals.cpp"
     "Source/JavaWrappers.cpp"
     "Source/OpenGLHelpers.cpp"
-    "Source/Permissions.cpp")
+    "Source/Permissions.cpp"
+    "Source/StdoutLogger.cpp")
 
 add_library(AndroidExtensions ${SOURCES})
 
