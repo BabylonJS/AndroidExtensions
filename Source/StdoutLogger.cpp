@@ -9,7 +9,6 @@ namespace
 {
     int fd_stdout[2];
     int fd_stderr[2];
-    int fd_saved[2];
 
     void thread_func(int fd, int prio)
     {
@@ -77,8 +76,5 @@ namespace android::StdoutLogger
 
         close(fd_stderr[1]);
         close(fd_stderr[0]);
-
-        setvbuf(stdout, NULL, fd_saved[0], 0);
-        setvbuf(stderr, NULL, fd_saved[1], 0);
-    }
+   }
 }
