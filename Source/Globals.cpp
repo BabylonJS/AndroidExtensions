@@ -1,4 +1,6 @@
 #include <AndroidExtensions/Globals.h>
+#include <android/asset_manager_jni.h>
+#include <jni.h>
 #include <stdexcept>
 
 namespace android::global
@@ -8,6 +10,7 @@ namespace android::global
         JavaVM* g_javaVM{};
         jobject g_appContext{};
         jobject g_currentActivity{};
+        AAssetManager* g_assetManager{};
 
         thread_local struct Env final
         {
@@ -58,8 +61,56 @@ namespace android::global
 
     void Initialize(JavaVM* javaVM, jobject context)
     {
+        Initialize(javaVM, context, nullptr);
+    }
+
+    void Initialize(JavaVM* javaVM, jobject context, jobject assetManager)
+    {
         g_javaVM = javaVM;
-        g_appContext = GetEnvForCurrentThread()->NewGlobalRef(android::content::Context{context}.getApplicationContext());
+        JNIEnv* env = GetEnvForCurrentThread();
+
+        if (g_appContext != nullptr)
+        {
+            env->DeleteGlobalRef(g_appContext);
+            g_appContext = nullptr;
+        }
+
+        if (context != nullptr)
+        {
+            jclass contextClass = env->GetObjectClass(context);
+            jmethodID getApplicationContext = env->GetMethodID(
+                contextClass, "getApplicationContext", "()Landroid/content/Context;");
+            jobject applicationContext = env->CallObjectMethod(context, getApplicationContext);
+            env->DeleteLocalRef(contextClass);
+
+            if (applicationContext != nullptr)
+            {
+                g_appContext = env->NewGlobalRef(applicationContext);
+                env->DeleteLocalRef(applicationContext);
+            }
+        }
+
+        if (assetManager != nullptr)
+        {
+            SetAssetManager(assetManager);
+        }
+        else if (context != nullptr)
+        {
+            jclass contextClass = env->GetObjectClass(context);
+            jmethodID getAssets = env->GetMethodID(
+                contextClass, "getAssets", "()Landroid/content/res/AssetManager;");
+            jobject assets = env->CallObjectMethod(context, getAssets);
+            env->DeleteLocalRef(contextClass);
+            SetAssetManager(assets);
+            if (assets != nullptr)
+            {
+                env->DeleteLocalRef(assets);
+            }
+        }
+        else
+        {
+            SetAssetManager(nullptr);
+        }
     }
 
     JNIEnv* GetEnvForCurrentThread()
@@ -126,5 +177,22 @@ namespace android::global
     RequestPermissionsResultEvent::Ticket AddRequestPermissionsResultCallback(RequestPermissionsResultEvent::Handler&& onAddRequestPermissionsResult)
     {
         return g_requestPermissionsResultEvent.AddHandler(std::move(onAddRequestPermissionsResult));
+    }
+
+    void SetAssetManager(jobject assetManager)
+    {
+        if (assetManager == nullptr)
+        {
+            g_assetManager = nullptr;
+            return;
+        }
+
+        JNIEnv* env = GetEnvForCurrentThread();
+        g_assetManager = AAssetManager_fromJava(env, assetManager);
+    }
+
+    AAssetManager* GetAssetManager()
+    {
+        return g_assetManager;
     }
 }
