@@ -1,16 +1,21 @@
 #pragma once
 
 #include <jni.h>
+#include <android/asset_manager_jni.h>
 #include <arcana/containers/ticketed_collection.h>
 #include "JavaWrappers.h"
 
 namespace android::global
 {
     void Initialize(JavaVM* javaVM, jobject appContext);
+    void Initialize(JavaVM* javaVM, jobject appContext, jobect assetManager);
 
     JNIEnv* GetEnvForCurrentThread();
 
     android::content::Context GetAppContext();
+
+    void SetAssetManager(jobject assetManager);
+    AAssetManager* GetAssetManager();
 
     android::app::Activity GetCurrentActivity();
     void SetCurrentActivity(jobject currentActivity);
