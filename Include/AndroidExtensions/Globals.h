@@ -8,7 +8,7 @@
 namespace android::global
 {
     void Initialize(JavaVM* javaVM, jobject appContext);
-    void Initialize(JavaVM* javaVM, jobject appContext, jobect assetManager);
+    void Initialize(JavaVM* javaVM, jobject appContext, jobject assetManager);
 
     JNIEnv* GetEnvForCurrentThread();
 
