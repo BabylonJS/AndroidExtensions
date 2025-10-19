@@ -8,6 +8,7 @@
 namespace android::global
 {
     void Initialize(JavaVM* javaVM, jobject appContext);
+    // Passing nullptr for appContext/assetManager clears cached globals during teardown.
     void Initialize(JavaVM* javaVM, jobject appContext, jobject assetManager);
 
     JNIEnv* GetEnvForCurrentThread();
