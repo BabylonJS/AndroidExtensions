@@ -78,14 +78,8 @@ namespace android::global
 
         if (context != nullptr)
         {
-            android::content::Context contextWrapper{context};
-            const auto applicationContextWrapper = contextWrapper.getApplicationContext();
-            jobject applicationContext = applicationContextWrapper;
-
-            if (applicationContext != nullptr)
-            {
-                g_appContext = env->NewGlobalRef(applicationContext);
-            }
+            g_appContext = env->NewGlobalRef(
+                android::content::Context{context}.getApplicationContext());
         }
 
         if (assetManager != nullptr)
@@ -94,9 +88,7 @@ namespace android::global
         }
         else if (context != nullptr)
         {
-            android::content::Context contextWrapper{context};
-            const auto assetsWrapper = contextWrapper.getAssets();
-            SetAssetManager(static_cast<jobject>(assetsWrapper));
+            SetAssetManager(android::content::Context{context}.getAssets());
         }
         else
         {
