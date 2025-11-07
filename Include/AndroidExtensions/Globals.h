@@ -8,9 +8,8 @@
 namespace android::global
 {
     void Initialize(JavaVM* javaVM, jobject appContext);
-    // Passing nullptr for appContext/assetManager clears cached globals so embedders can
-    // explicitly tear down between reloads, or supply only an asset manager when no stable
-    // Java Context is available (e.g., headless/unit-test harnesses).
+    // Overload supporting headless scenarios without a Context.
+    // Safe to call multiple times (e.g., hot reloads).
     void Initialize(JavaVM* javaVM, jobject appContext, jobject assetManager);
 
     JNIEnv* GetEnvForCurrentThread();
