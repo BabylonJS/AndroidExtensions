@@ -22,11 +22,14 @@ public class WebSocket extends WebSocketClient {
         this.messageCallback(message);
     }
 
+    private boolean errorFired = false;
+
     @Override
     public void onClose(int code, String reason, boolean remote)
     {
-        // For all other close frames, we need to trigger the error callback
-        if (code != CloseFrame.NORMAL && code != CloseFrame.ABNORMAL_CLOSE && code != CloseFrame.NEVER_CONNECTED)
+        // Fire errorCallback for abnormal close codes, but only if onError
+        // hasn't already fired it (prevents double error reporting).
+        if (!errorFired && code != CloseFrame.NORMAL && code != CloseFrame.ABNORMAL_CLOSE && code != CloseFrame.NEVER_CONNECTED)
         {
             this.errorCallback(reason);
         }
@@ -37,6 +40,7 @@ public class WebSocket extends WebSocketClient {
     @Override
     public void onError(Exception ex)
     {
+        errorFired = true;
         this.errorCallback(ex.getMessage());
     }
 
